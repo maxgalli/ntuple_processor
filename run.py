@@ -98,19 +98,23 @@ class RunManager:
         else:
             raise NameError(
                 'Impossible to create RDataFrame with different tree names')
-        chain = TChain(tree_name, tree_name)
+        chain = TChain()
         ftag_fchain = {}
         for ntuple in dataset.ntuples:
             logger.debug('%%%%% Dataset -> RDF, processing ntuple {}'.format(
                 ntuple))
-            chain.Add(ntuple.path)
+            chain.Add(ntuple.path
+                    + '/'
+                    + ntuple.directory)
             for friend in ntuple.friends:
                 logger.debug('%%%%% Dataset -> RDF, processing friend {}'.format(
                     friend))
                 if friend.tag not in ftag_fchain.keys():
-                    ftag_fchain[friend.tag] = TChain(friend.directory, friend.directory)
+                    ftag_fchain[friend.tag] = TChain()
                     logger.debug('%%%%% Dataset -> RDF, chain created from friend')
-                ftag_fchain[friend.tag].Add(friend.path)
+                ftag_fchain[friend.tag].Add(friend.path
+                        + '/'
+                        + friend.directory)
         logger.debug('%%%%% Dataset -> RDF, Tags-Chains dictionary: {}'.format(
             ftag_fchain))
         for ch in ftag_fchain.values():
